@@ -1,4 +1,4 @@
-# Laboratório 2: Desvendando o Decoder (Transformers)
+# Laboratório 3: Desvendando o Decoder (Transformers)
 
 Neste laboratório, avançamos do entendimento do Encoder para a construção dos blocos matemáticos centrais do **Decoder**. O objetivo é criar um sistema que gere texto de forma fluente, uma palavra por vez, garantindo que o modelo não cometa o erro de "olhar para o futuro" durante seu processamento. Dissecamos os mecanismos de atenção e a álgebra linear necessária para a geração auto-regressiva.
 ## Tecnologias usadas
