@@ -93,7 +93,10 @@ print(f"Dimensão da matriz de pesos (Alinhamento): {pesos.shape}")
 
 ## Tarefa 3: Simulando o Loop de Inferência Auto-Regressivo
 
-
+VOCABULARIO = ["<SOS>", "O", "rato", "roeu", "a", "roupa", "do", "rei", "de", "Roma", "<EOS>"]
+V_SIZE = 10000 # Tamanho do vocabulário total (ex: 10k)
+TOKEN_PARA_ID = {word: i for i, word in enumerate(VOCABULARIO)}
+ID_PARA_TOKEN = {i: word for i, word in enumerate(VOCABULARIO)}
 
 
 
