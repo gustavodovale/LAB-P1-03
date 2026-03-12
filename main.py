@@ -36,6 +36,7 @@ masked_scores = scores + mask
 # Softmax converte -inf em 0.0 absoluto (proibição de olhar adiante)
 probabilidades = Softmax(masked_scores)
 
+print("\nTarefa 1\n")
 print(f"Matriz de Scores Originais (Sem Máscara):\n{np.round(scores, 2)}")
 
 print(f"\nMatriz de Scores Mascarados (Com -inf):\n{np.round(masked_scores,2)}")
@@ -87,16 +88,83 @@ decoder_state = np.random.randn(1, seq_len_ingles, 512)
 
 context_vector, pesos = Cruzamento_atensão(encoder_output, decoder_state)
 
+print("\nTarefa 2\n")
 print(f"Dimensão da saída do Cross-Attention: {context_vector.shape}")
 print(f"Dimensão da matriz de pesos (Alinhamento): {pesos.shape}")
 
 
 ## Tarefa 3: Simulando o Loop de Inferência Auto-Regressivo
+print("\nTarefa 3\n")
 
-VOCABULARIO = ["<SOS>", "O", "rato", "roeu", "a", "roupa", "do", "rei", "de", "Roma", "<EOS>"]
-V_SIZE = 10000 # Tamanho do vocabulário total (ex: 10k)
-TOKEN_PARA_ID = {word: i for i, word in enumerate(VOCABULARIO)}
-ID_PARA_TOKEN = {i: word for i, word in enumerate(VOCABULARIO)}
+vocabulario = ["<START>", "O", "rato","<EOS>"]
+tamanho_vocab = len(vocabulario) # Tamanho do vocabulário total 
+id_token = {i:palavra for i, palavra in enumerate(vocabulario)}
+
+def gerar_proximo_token(sequencia_atual, saida_encoder):
+    """
+    Simula a passagem pelo Decoder para prever a próxima palavra.
+    """
+    dim_modelo = 512
+    
+    # 1. Simulação do estado interno do Decoder após processar a sequência atual
+    # Representa o vetor latente do último token gerado
+    vetor_latente_decoder = np.random.randn(dim_modelo)
+    
+    # 2. Projeção Linear (Camada de Saída)
+    # Transforma 512 dimensões para o tamanho do vocabulário (10.000)
+    pesos_saida = np.random.randn(dim_modelo, tamanho_vocab)
+    pontuacoes_brutas = np.dot(vetor_latente_decoder, pesos_saida)
+    
+    # 3. Distribuição de probabilidades
+    probs = Softmax(pontuacoes_brutas)
+    
+    return probs
+
+# --- O Loop de Inferência ---
+
+def loop_de_geracao(saida_encoder):
+    # Iniciamos com o token de inicio
+    contexto = ["<START>"]
+    geracao_concluida = False
+    
+    print("Iniciando Processo de Geração")
+    
+    while not geracao_concluida:
+        # Chama a função para obter as probabilidades do proximo token
+        probabilidades = gerar_proximo_token(contexto, saida_encoder)
+        
+        # Seleciona o índice (ID) com a maior probabilidade (Argmax)
+        id_escolhido = np.argmax(probabilidades)
+        
+        # Simulação para manter a demo dentro do nosso pequeno vocabulario conhecido
+        if id_escolhido >= len(vocabulario):
+            id_escolhido = np.random.randint(1, len(vocabulario))
+            
+        palavra_prevista = id_token[id_escolhido]
+        
+        # Adiciona a palavra ao contexto para a próxima iteração
+        contexto.append(palavra_prevista)
+        
+        print(f"Token adicionado: {palavra_prevista}")
+        
+        # Critérios de parada: Token de fim (<EOS>) ou limite de segurança
+        if palavra_prevista == "<EOS>" or len(contexto) > 12:
+            geracao_concluida = True
+            
+    return contexto
+
+# Execução Final:
+
+# Criando uma saída fictícia do encoder para alimentar o processo
+saida_encoder_mock = np.random.randn(1, 10, 512)
+
+frase_gerada = loop_de_geracao(saida_encoder_mock)
+
+print("\nFrase Final Gerada")
+print(" ".join(frase_gerada))
+
+
+
 
 
 
